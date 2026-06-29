@@ -53,14 +53,10 @@ export function useAdmin() {
     fetchAllowedEmails()
   }
 
-  // Stats globales
   const fetchGlobalStats = useCallback(async () => {
-    const [{ count: totalUsers }, { count: totalHabits }, { count: totalLogs }] = await Promise.all([
-      supabase.from('user_profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('habits').select('*', { count: 'exact', head: true }).eq('is_archived', false),
-      supabase.from('habit_logs').select('*', { count: 'exact', head: true }).eq('completed', true),
-    ])
-    return { totalUsers, totalHabits, totalLogs }
+    const { data, error } = await supabase.rpc('get_admin_stats')
+    if (error || !data) return null
+    return data
   }, [])
 
   return {
