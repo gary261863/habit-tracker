@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabase";
+
+const translateError = (msg) => {
+  if (msg.includes("User already registered"))
+    return "Este correo ya está registrado. Inicia sesión.";
+  if (msg.includes("Invalid login credentials"))
+    return "Correo o contraseña incorrectos.";
+  if (msg.includes("Email not confirmed"))
+    return "Confirma tu correo antes de iniciar sesión.";
+  if (msg.includes("Password should be at least"))
+    return "La contraseña debe tener al menos 6 caracteres.";
+  if (msg.includes("Unable to validate email"))
+    return "El correo ingresado no es válido.";
+  return msg;
+};
 
 export default function AuthPage() {
   const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState("login"); // 'login' | 'register'
+  const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,21 +32,39 @@ export default function AuthPage() {
     setError("");
     setMessage("");
     setLoading(true);
+
     if (mode === "login") {
       const { error } = await signIn(email, password);
-      if (error) setError(error.message);
+      if (error) setError(translateError(error.message));
     } else {
+      // Verificar lista blanca antes de registrar
+      const { data: allowed, error: checkError } = await supabase
+        .from("allowed_emails")
+        .select("id")
+        .eq("email", email.toLowerCase().trim())
+        .single();
+
+      if (checkError || !allowed) {
+        setError(
+          "Este correo no está autorizado para registrarse. Contacta al administrador."
+        );
+        setLoading(false);
+        return;
+      }
+
       const { error } = await signUp(email, password);
-      if (error) setError(error.message);
-      else setMessage("Revisa tu correo para confirmar tu cuenta.");
+      if (error) setError(translateError(error.message));
+      else
+        setMessage(
+          "Revisa tu correo y confirma tu cuenta para poder iniciar sesión."
+        );
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-surface-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-surface-50 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm">
-        {/* Logo / title */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-accent rounded-xl mb-4">
             <span className="text-2xl">🌱</span>
@@ -43,7 +76,6 @@ export default function AuthPage() {
         </div>
 
         <div className="card p-6">
-          {/* Mode toggle */}
           <div className="flex bg-surface-100 rounded p-1 mb-6">
             {["login", "register"].map((m) => (
               <button
@@ -121,7 +153,7 @@ export default function AuthPage() {
               className="btn-primary w-full justify-center"
             >
               {loading
-                ? "Cargando..."
+                ? "Verificando..."
                 : mode === "login"
                 ? "Entrar"
                 : "Crear cuenta"}
