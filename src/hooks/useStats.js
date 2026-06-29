@@ -31,8 +31,12 @@ export function useStats(habits) {
       let tempStreak = 0
       let completed = 0
 
-      // current streak: go backwards from today
-      for (let i = days.length - 1; i >= 0; i--) {
+      // current streak: go backwards from yesterday if today not done
+      const todayStr = format(today, 'yyyy-MM-dd')
+      const todayDone = completedSet.has(`${habit.id}__${todayStr}`)
+      const startFrom = todayDone ? days.length - 1 : days.length - 2
+
+      for (let i = startFrom; i >= 0; i--) {
         const d = format(days[i], 'yyyy-MM-dd')
         if (completedSet.has(`${habit.id}__${d}`)) {
           currentStreak++
@@ -40,6 +44,7 @@ export function useStats(habits) {
           break
         }
       }
+      if (todayDone) ; // already counted today above
 
       // max streak and total
       for (const day of days) {
