@@ -2,14 +2,15 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useHabits } from '../hooks/useHabits'
 import { useLogs } from '../hooks/useLogs'
+import { useToday } from '../hooks/useToday'
 import HabitRow from '../components/habits/HabitRow'
 import { Link } from 'react-router-dom'
 import { Settings } from 'lucide-react'
 
-const today = format(new Date(), 'yyyy-MM-dd')
-const todayLabel = format(new Date(), "EEEE, d 'de' MMMM", { locale: es })
-
 export default function TodayPage() {
+  const today = useToday()
+  const todayLabel = format(new Date(today + 'T00:00:00'), "EEEE, d 'de' MMMM", { locale: es })
+
   const { habits, loading: habitsLoading } = useHabits()
   const { isCompleted, toggle, loading: logsLoading } = useLogs(today)
 

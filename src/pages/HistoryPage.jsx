@@ -4,12 +4,13 @@ import { es } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useHabits } from '../hooks/useHabits'
 import { useLogs } from '../hooks/useLogs'
+import { useToday } from '../hooks/useToday'
 import HabitRow from '../components/habits/HabitRow'
 
 export default function HistoryPage() {
   const [date, setDate] = useState(new Date())
   const dateStr = format(date, 'yyyy-MM-dd')
-  const todayStr = format(new Date(), 'yyyy-MM-dd')
+  const todayStr = useToday()
 
   const { habits, loading: habitsLoading } = useHabits()
   const { isCompleted, toggle, loading: logsLoading } = useLogs(dateStr)
