@@ -289,6 +289,45 @@ export default function SettingsPage() {
               </div>
             )
           })}
+
+          {/* Hábitos sin categoría */}
+          {(grouped['none'] || []).length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-surface-300" />
+                <span className="text-xs font-semibold text-ink-soft uppercase tracking-wider">📁 Sin categoría</span>
+              </div>
+              <div className="space-y-2">
+                {grouped['none'].map(habit => (
+                  <div key={habit.id}>
+                    {habitForm?.id === habit.id ? (
+                      <HabitForm
+                        categories={categories}
+                        initial={habit}
+                        onSave={(f) => handleUpdateHabit(habit.id, f)}
+                        onCancel={() => setHabitForm(null)}
+                      />
+                    ) : (
+                      <div className="card px-4 py-3 flex items-center gap-3">
+                        <span className="text-base">{habit.emoji || '⚪'}</span>
+                        <span className="text-sm font-medium text-ink flex-1">{habit.name}</span>
+                        <button onClick={() => setHabitForm(habit)} className="btn-ghost px-2 py-1 text-ink-muted">
+                          <Pencil size={13} />
+                        </button>
+                        <button onClick={() => setConfirm({ type: 'archive', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-ink-muted" title="Archivar">
+                          <Archive size={13} />
+                        </button>
+                        <button onClick={() => setConfirm({ type: 'habit', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-danger">
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {habits.length === 0 && categories.length > 0 && (
             <p className="text-sm text-ink-muted text-center py-4">Aún no hay hábitos. ¡Crea el primero!</p>
           )}
