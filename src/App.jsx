@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { HabitsProvider } from './context/HabitsContext'
 import AppLayout from './components/layout/AppLayout'
 import AuthPage from './pages/AuthPage'
 import TodayPage from './pages/TodayPage'
@@ -27,16 +28,18 @@ function ProtectedRoutes() {
     </div>
   )
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        <Route index element={<TodayPage />} />
-        <Route path="historial" element={<HistoryPage />} />
-        <Route path="stats" element={<StatsPage />} />
-        <Route path="ajustes" element={<SettingsPage />} />
-        <Route path="perfil" element={<ProfilePage />} />
-        <Route path="admin" element={<AdminPage />} />
-      </Route>
-    </Routes>
+    <HabitsProvider>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<TodayPage />} />
+          <Route path="historial" element={<HistoryPage />} />
+          <Route path="stats" element={<StatsPage />} />
+          <Route path="ajustes" element={<SettingsPage />} />
+          <Route path="perfil" element={<ProfilePage />} />
+          <Route path="admin" element={<AdminPage />} />
+        </Route>
+      </Routes>
+    </HabitsProvider>
   )
 }
 

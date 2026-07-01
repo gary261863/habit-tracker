@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useCategories } from '../hooks/useCategories'
-import { useHabits } from '../hooks/useHabits'
-import { Plus, Pencil, Trash2, X, Check, Archive } from 'lucide-react'
+import { useHabits, useArchivedHabits } from '../hooks/useHabits'
+import { Plus, Pencil, Trash2, X, Check, Archive, ChevronDown, ChevronRight, ArchiveRestore } from 'lucide-react'
 
 const PALETTE = [
   '#2D6A4F','#52B788','#1B4332','#40916C',
@@ -139,10 +139,12 @@ function HabitForm({ categories, initial, onSave, onCancel }) {
 export default function SettingsPage() {
   const { categories, create: createCat, update: updateCat, remove: removeCat } = useCategories()
   const { habits, create: createHabit, update: updateHabit, archive: archiveHabit, remove: removeHabit } = useHabits()
+  const { archivedHabits, restore: restoreHabit, remove: removeArchivedHabit } = useArchivedHabits()
 
   const [catForm, setCatForm] = useState(null) // null | 'new' | {id,...}
   const [habitForm, setHabitForm] = useState(null)
   const [confirm, setConfirm] = useState(null) // {type, id, label}
+  const [showArchived, setShowArchived] = useState(false)
 
   const handleCreateCat = async (fields) => {
     await createCat(fields)
@@ -165,6 +167,7 @@ export default function SettingsPage() {
     if (confirm.type === 'cat') await removeCat(confirm.id)
     if (confirm.type === 'habit') await removeHabit(confirm.id)
     if (confirm.type === 'archive') await archiveHabit(confirm.id)
+    if (confirm.type === 'delete-archived') await removeArchivedHabit(confirm.id)
     setConfirm(null)
   }
 
@@ -334,6 +337,51 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* ── Hábitos archivados ── */}
+      {archivedHabits.length > 0 && (
+        <section>
+          <button
+            onClick={() => setShowArchived(v => !v)}
+            className="flex items-center gap-2 w-full text-left mb-3"
+          >
+            {showArchived ? <ChevronDown size={15} className="text-ink-muted" /> : <ChevronRight size={15} className="text-ink-muted" />}
+            <h2 className="text-sm font-semibold text-ink-soft uppercase tracking-wider">
+              Archivados ({archivedHabits.length})
+            </h2>
+          </button>
+
+          {showArchived && (
+            <div className="space-y-2">
+              {archivedHabits.map(habit => (
+                <div key={habit.id} className="card px-4 py-3 flex items-center gap-3 opacity-60">
+                  <span className="text-base">{habit.emoji || '⚪'}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-ink truncate">{habit.name}</p>
+                    {habit.categories && (
+                      <p className="text-xs text-ink-muted">{habit.categories.emoji} {habit.categories.name}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => restoreHabit(habit.id)}
+                    className="btn-ghost px-2 py-1 text-accent"
+                    title="Restaurar"
+                  >
+                    <ArchiveRestore size={14} />
+                  </button>
+                  <button
+                    onClick={() => setConfirm({ type: 'delete-archived', id: habit.id, label: habit.name })}
+                    className="btn-ghost px-2 py-1 text-danger"
+                    title="Eliminar permanentemente"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* ── Confirm dialog ── */}
       {confirm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
@@ -344,7 +392,7 @@ export default function SettingsPage() {
             <p className="text-sm text-ink-soft mb-4">
               {confirm.type === 'archive'
                 ? `¿Archivar "${confirm.label}"? Dejará de aparecer en la lista diaria pero conservarás el historial.`
-                : `¿Eliminar "${confirm.label}"? Esta acción no se puede deshacer.`}
+                : `¿Eliminar "${confirm.label}"? Esta acción no se puede deshacer y se perderá todo el historial.`}
             </p>
             <div className="flex gap-2">
               <button onClick={handleConfirm} className="btn-danger">
