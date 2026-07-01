@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { CalendarDays, BarChart2, Settings, LogOut, History, Menu, X, ShieldCheck } from 'lucide-react'
+import { CalendarDays, BarChart2, Settings, LogOut, History, Menu, X, ShieldCheck, User } from 'lucide-react'
 
 const navBase = [
   { to: '/',          icon: CalendarDays, label: 'Hoy' },
   { to: '/historial', icon: History,      label: 'Historial' },
   { to: '/stats',     icon: BarChart2,    label: 'Estadísticas' },
+  { to: '/perfil',    icon: User,         label: 'Mi perfil' },
   { to: '/ajustes',   icon: Settings,     label: 'Ajustes' },
 ]
 
@@ -29,8 +30,24 @@ function NavLinks({ items, onClick }) {
   ))
 }
 
+function Avatar({ profile, user, size = 28 }) {
+  const initial = (profile?.display_name || user?.email || '?')[0].toUpperCase()
+  return (
+    <div
+      className="rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 overflow-hidden"
+      style={{ width: size, height: size }}
+    >
+      {profile?.avatar_url ? (
+        <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+      ) : (
+        <span className="font-medium text-accent" style={{ fontSize: size * 0.4 }}>{initial}</span>
+      )}
+    </div>
+  )
+}
+
 export default function Sidebar() {
-  const { signOut, user, isAdmin } = useAuth()
+  const { signOut, user, profile, isAdmin } = useAuth()
   const nav = isAdmin
     ? [...navBase, { to: '/admin', icon: ShieldCheck, label: 'Admin', admin: true }]
     : navBase
@@ -47,7 +64,10 @@ export default function Sidebar() {
         <NavLinks items={nav} />
       </nav>
       <div className="px-3 py-4 border-t border-surface-100">
-        <p className="text-xs text-ink-muted px-3 mb-2 truncate">{user?.email}</p>
+        <div className="flex items-center gap-2 px-1 mb-2">
+          <Avatar profile={profile} user={user} size={28} />
+          <p className="text-xs text-ink-muted truncate flex-1">{profile?.display_name || user?.email}</p>
+        </div>
         <button onClick={signOut} className="btn-ghost w-full justify-start text-ink-muted hover:text-danger">
           <LogOut size={16} /> Cerrar sesión
         </button>
@@ -57,7 +77,7 @@ export default function Sidebar() {
 }
 
 export function MobileHeader() {
-  const { signOut, user, isAdmin } = useAuth()
+  const { signOut, user, profile, isAdmin } = useAuth()
   const [open, setOpen] = useState(false)
   const nav = isAdmin
     ? [...navBase, { to: '/admin', icon: ShieldCheck, label: 'Admin', admin: true }]
@@ -92,7 +112,10 @@ export function MobileHeader() {
               <NavLinks items={nav} onClick={() => setOpen(false)} />
             </nav>
             <div className="px-3 py-4 border-t border-surface-100">
-              <p className="text-xs text-ink-muted px-3 mb-2 truncate">{user?.email}</p>
+              <div className="flex items-center gap-2 px-1 mb-2">
+                <Avatar profile={profile} user={user} size={28} />
+                <p className="text-xs text-ink-muted truncate flex-1">{profile?.display_name || user?.email}</p>
+              </div>
               <button onClick={signOut} className="btn-ghost w-full justify-start text-ink-muted hover:text-danger">
                 <LogOut size={16} /> Cerrar sesión
               </button>

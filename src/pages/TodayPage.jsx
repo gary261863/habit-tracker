@@ -3,6 +3,7 @@ import { es } from 'date-fns/locale'
 import { useHabits } from '../hooks/useHabits'
 import { useLogs } from '../hooks/useLogs'
 import { useToday } from '../hooks/useToday'
+import { useAuth } from '../context/AuthContext'
 import HabitRow from '../components/habits/HabitRow'
 import { Link } from 'react-router-dom'
 import { Settings } from 'lucide-react'
@@ -10,6 +11,9 @@ import { Settings } from 'lucide-react'
 export default function TodayPage() {
   const today = useToday()
   const todayLabel = format(new Date(today + 'T00:00:00'), "EEEE, d 'de' MMMM", { locale: es })
+
+  const { profile } = useAuth()
+  const firstName = profile?.display_name?.trim().split(' ')[0]
 
   const { habits, loading: habitsLoading } = useHabits()
   const { isCompleted, toggle, loading: logsLoading } = useLogs(today)
@@ -34,7 +38,9 @@ export default function TodayPage() {
       {/* Header */}
       <div className="mb-6">
         <p className="text-sm text-ink-muted capitalize">{todayLabel}</p>
-        <h1 className="text-2xl font-semibold text-ink mt-0.5">Buenos días 🌤</h1>
+        <h1 className="text-2xl font-semibold text-ink mt-0.5">
+          Buenos días{firstName ? `, ${firstName}` : ''} 🌤
+        </h1>
       </div>
 
       {/* Progress bar */}

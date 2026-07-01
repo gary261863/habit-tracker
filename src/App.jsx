@@ -7,6 +7,7 @@ import HistoryPage from './pages/HistoryPage'
 import StatsPage from './pages/StatsPage'
 import SettingsPage from './pages/SettingsPage'
 import AdminPage from './pages/AdminPage'
+import ProfilePage from './pages/ProfilePage'
 
 function ProtectedRoutes() {
   const { user, loading, isActive } = useAuth()
@@ -32,6 +33,7 @@ function ProtectedRoutes() {
         <Route path="historial" element={<HistoryPage />} />
         <Route path="stats" element={<StatsPage />} />
         <Route path="ajustes" element={<SettingsPage />} />
+        <Route path="perfil" element={<ProfilePage />} />
         <Route path="admin" element={<AdminPage />} />
       </Route>
     </Routes>
