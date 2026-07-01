@@ -1,6 +1,6 @@
 import { useHabits } from '../hooks/useHabits'
 import { useStats } from '../hooks/useStats'
-import HeatMap from '../components/charts/HeatMap'
+import HabitHeatmap from '../components/charts/HabitHeatmap'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
@@ -129,16 +129,7 @@ export default function StatsPage() {
         <h2 className="text-sm font-semibold text-ink-soft uppercase tracking-wider mb-3">Mapa de actividad anual</h2>
         <div className="space-y-4">
           {habits.map(habit => (
-            <div key={habit.id} className="card p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <span>{habit.emoji || '⚪'}</span>
-                <span className="text-sm font-medium text-ink">{habit.name}</span>
-              </div>
-              <HeatMap
-                data={stats.heatmapByHabit[habit.id] || []}
-                color={habit.categories?.color || '#2D6A4F'}
-              />
-            </div>
+            <HabitHeatmap key={habit.id} habit={habit} />
           ))}
         </div>
       </section>

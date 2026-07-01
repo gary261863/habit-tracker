@@ -45,13 +45,17 @@ export function useLogs(dateStr) {
 }
 
 // Fetch logs for a date range (for stats)
-export async function fetchLogsRange(userId, from, to) {
-  const { data } = await supabase
+export async function fetchLogsRange(userId, from, to, habitId = null) {
+  let query = supabase
     .from('habit_logs')
     .select('*')
     .eq('user_id', userId)
     .gte('date', from)
     .lte('date', to)
     .eq('completed', true)
+
+  if (habitId) query = query.eq('habit_id', habitId)
+
+  const { data } = await query
   return data || []
 }
