@@ -275,13 +275,13 @@ export default function SettingsPage() {
                         <div className="card px-4 py-3 flex items-center gap-3">
                           <span className="text-base">{habit.emoji || '⚪'}</span>
                           <span className="text-sm font-medium text-ink flex-1">{habit.name}</span>
-                          <button onClick={() => setHabitForm(habit)} className="btn-ghost px-2 py-1 text-ink-muted">
+                          <button onClick={() => setHabitForm(habit)} className="btn-ghost px-2 py-1 text-ink-muted" title="Editar">
                             <Pencil size={13} />
                           </button>
                           <button onClick={() => setConfirm({ type: 'archive', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-ink-muted" title="Archivar">
                             <Archive size={13} />
                           </button>
-                          <button onClick={() => setConfirm({ type: 'habit', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-danger">
+                          <button onClick={() => setConfirm({ type: 'habit', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-danger" title="Eliminar permanentemente">
                             <Trash2 size={13} />
                           </button>
                         </div>
@@ -314,13 +314,13 @@ export default function SettingsPage() {
                       <div className="card px-4 py-3 flex items-center gap-3">
                         <span className="text-base">{habit.emoji || '⚪'}</span>
                         <span className="text-sm font-medium text-ink flex-1">{habit.name}</span>
-                        <button onClick={() => setHabitForm(habit)} className="btn-ghost px-2 py-1 text-ink-muted">
+                        <button onClick={() => setHabitForm(habit)} className="btn-ghost px-2 py-1 text-ink-muted" title="Editar">
                           <Pencil size={13} />
                         </button>
                         <button onClick={() => setConfirm({ type: 'archive', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-ink-muted" title="Archivar">
                           <Archive size={13} />
                         </button>
-                        <button onClick={() => setConfirm({ type: 'habit', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-danger">
+                        <button onClick={() => setConfirm({ type: 'habit', id: habit.id, label: habit.name })} className="btn-ghost px-2 py-1 text-danger" title="Eliminar permanentemente">
                           <Trash2 size={13} />
                         </button>
                       </div>
